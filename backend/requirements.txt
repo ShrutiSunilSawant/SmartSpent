@@ -1,0 +1,56 @@
+# ============================================================
+# AI Financial Copilot - Backend Dependencies
+# ============================================================
+# Versions are intentionally unpinned so pip uses whatever
+# is already installed on your system without downgrading.
+# ============================================================
+
+# --- Web Framework ---
+fastapi
+uvicorn[standard]
+
+# --- Database ---
+sqlalchemy
+aiosqlite
+
+# --- Data Validation ---
+pydantic>=2.0
+pydantic-settings>=2.0
+email-validator
+
+# --- AI / LangChain ---
+langchain
+langchain-community
+langgraph
+
+# --- Local LLM ---
+ollama
+
+# --- Vector Memory ---
+chromadb
+
+# --- OCR ---
+pytesseract
+opencv-python
+Pillow
+
+# --- Machine Learning ---
+scikit-learn
+numpy
+pandas
+
+# --- Forecasting ---
+prophet
+# If prophet install fails, comment it out above and uncomment:
+# statsmodels
+
+# --- Utilities ---
+python-multipart
+python-dotenv
+loguru
+httpx
+
+# --- Auth (password hashing + JWT) ---
+bcrypt
+pyjwt
+slowapi

@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+env/
+.venv/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# ChromaDB
+chroma_db/
+
+# Logs
+logs/
+*.log
+
+# ML models (can be large)
+*.pkl
+*.joblib
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Vite build
+frontend/dist/
+frontend/.vite/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+
+# Uploads
+backend/uploads/
+*.jpg
+*.jpeg
+*.png
+*.pdf
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# MyPy
+.mypy_cache/
