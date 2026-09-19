@@ -6,7 +6,7 @@
 
 ##  Features
 
-**💬 AI Financial Assistant**
+** AI Financial Assistant**
 Ask questions like "Where am I overspending?" or "Can I afford a $500 vacation?" The agent analyzes your actual spending data and responds in plain English using a locally running LLM.
 
 ** Interactive Dashboard**
