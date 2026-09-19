@@ -1,6 +1,6 @@
 # 💸 SmartSpent — The Finance Agent
 
-> A fully local, privacy-first AI finance agent that tracks spending, scans receipts, detects anomalies, forecasts expenses, and answers financial questions in natural language. No cloud. No API keys. Completely free.
+> A fully privacy-first AI finance agent that tracks spending, scans receipts, detects anomalies, forecasts expenses, and answers financial questions in natural language. 
 
 ---
 
@@ -27,8 +27,6 @@ Every new expense is automatically classified into Food, Transport, Shopping, et
 ** Conversation Memory**
 The AI remembers context across sessions using vector embeddings. Ask follow-up questions without repeating yourself.
 
-** 100% Private**
-Everything runs on your machine. No OpenAI. No cloud. No data leaves your computer.
 
 ---
 
