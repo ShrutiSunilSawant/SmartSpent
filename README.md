@@ -4,35 +4,35 @@
 
 ---
 
-## 🚀 Features
+##  Features
 
 **💬 AI Financial Assistant**
 Ask questions like "Where am I overspending?" or "Can I afford a $500 vacation?" The agent analyzes your actual spending data and responds in plain English using a locally running LLM.
 
-**📊 Interactive Dashboard**
+** Interactive Dashboard**
 Real-time overview of total spending, monthly averages, top categories, and anomaly alerts with animated charts.
 
-**🧾 Receipt & Invoice Scanner**
+** Receipt & Invoice Scanner**
 Upload a photo or PDF invoice. AI extracts the amount, merchant, date, and category automatically using computer vision.
 
-**⚠️ Anomaly Detection**
+** Anomaly Detection**
 Machine learning flags unusual transactions automatically — large purchases, duplicate charges, or out-of-pattern spending.
 
-**📈 Spending Forecast**
+** Spending Forecast**
 Predicts your next 3 months of spending using time-series models with a Prophet → ARIMA → Moving Average fallback chain.
 
-**🏷️ Auto Categorization**
+** Auto Categorization**
 Every new expense is automatically classified into Food, Transport, Shopping, etc. using a trained Naive Bayes classifier.
 
-**🧠 Conversation Memory**
+** Conversation Memory**
 The AI remembers context across sessions using vector embeddings. Ask follow-up questions without repeating yourself.
 
-**🔒 100% Private**
+** 100% Private**
 Everything runs on your machine. No OpenAI. No cloud. No data leaves your computer.
 
 ---
 
-## 📊 Key Components
+##  Key Components
 
 ### Dashboard
 Real-time stat cards showing total spent, monthly average, top category, and anomaly count. Area chart of spending trends, pie chart of category breakdown, recent expenses list with anomaly indicators, and AI savings insights panel.
@@ -51,7 +51,7 @@ Drag and drop image or PDF upload with image quality validation (blur detection,
 
 ---
 
-## 💻 Installation
+##  Installation
 
 ### Prerequisites
 - Python 3.11 or higher
@@ -139,7 +139,7 @@ To switch models open `backend/.env` and change the `OLLAMA_MODEL` value.
 
 ---
 
-## 🔧 Troubleshooting
+##  Troubleshooting
 
 **uvicorn command not found**
 ```bash
@@ -180,7 +180,7 @@ cd backend && python -m uvicorn app.main:app --reload --port 8000
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 
 ```
 smartspent/
@@ -205,7 +205,7 @@ smartspent/
 
 ---
 
-## 🎯 ML Models Explained
+##  ML Models Explained
 
 **Expense Categorizer (TF-IDF + Naive Bayes)**
 Trained on 96 merchant to category examples at startup. Classifies new expenses into Food, Transport, Shopping, and other categories based on merchant name and description. Runs automatically on every new expense.
@@ -218,7 +218,7 @@ Three-tier fallback chain. Prophet handles rich time-series patterns. ARIMA serv
 
 ---
 
-## 🔧 Technologies Used
+##  Technologies Used
 
 **Frontend**
 React 18, Vite, Tailwind CSS, Recharts, Framer Motion, lucide-react
@@ -237,7 +237,7 @@ OpenCV, pytesseract, PyMuPDF, Pillow
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 [Ollama](https://ollama.com) for making local LLM inference accessible to everyone.
 [LangChain](https://langchain.com) and [LangGraph](https://langchain-ai.github.io/langgraph) for the agent framework.
