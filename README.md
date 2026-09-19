@@ -6,25 +6,25 @@
 
 ##  Features
 
-** AI Financial Assistant**
+### AI Financial Assistant 
 Ask questions like "Where am I overspending?" or "Can I afford a $500 vacation?" The agent analyzes your actual spending data and responds in plain English using a locally running LLM.
 
-** Interactive Dashboard**
+### Interactive Dashboard
 Real-time overview of total spending, monthly averages, top categories, and anomaly alerts with animated charts.
 
-** Receipt & Invoice Scanner**
+### Receipt & Invoice Scanner
 Upload a photo or PDF invoice. AI extracts the amount, merchant, date, and category automatically using computer vision.
 
-** Anomaly Detection**
+### Anomaly Detection
 Machine learning flags unusual transactions automatically — large purchases, duplicate charges, or out-of-pattern spending.
 
-** Spending Forecast**
+### Spending Forecast
 Predicts your next 3 months of spending using time-series models with a Prophet → ARIMA → Moving Average fallback chain.
 
-** Auto Categorization**
+### Auto Categorization
 Every new expense is automatically classified into Food, Transport, Shopping, etc. using a trained Naive Bayes classifier.
 
-** Conversation Memory**
+### Conversation Memory
 The AI remembers context across sessions using vector embeddings. Ask follow-up questions without repeating yourself.
 
 
