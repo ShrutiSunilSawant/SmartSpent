@@ -36,7 +36,7 @@ The AI remembers context across sessions using vector embeddings. Ask follow-up 
 Real-time stat cards showing total spent, monthly average, top category, and anomaly count. Area chart of spending trends, pie chart of category breakdown, recent expenses list with anomaly indicators, and AI savings insights panel.
 
 ### Expenses
-Full CRUD — add, edit, delete expenses with search and filter by category, date, and amount. Every new entry runs automatic ML category prediction and anomaly detection.
+Full CRUD - add, edit, delete expenses with search and filter by category, date, and amount. Every new entry runs automatic ML category prediction and anomaly detection.
 
 ### Analytics
 Monthly spending bar chart, category breakdown pie chart, 3-month spending forecast, anomalous expenses list, AI savings insights, and horizontal category comparison chart.
