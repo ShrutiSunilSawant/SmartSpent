@@ -33,8 +33,8 @@ function ExpenseForm({ initial = {}, onSave, onCancel, saving }) {
     description: initial.description || '',
     currency: initial.currency || 'USD',
     date: initial.date
-      ? format(new Date(initial.date), "yyyy-MM-dd'T'HH:mm")
-      : format(new Date(), "yyyy-MM-dd'T'HH:mm"),
+      ? format(new Date(initial.date), 'yyyy-MM-dd')
+      : format(new Date(), 'yyyy-MM-dd'),
   })
 
   const handleSubmit = (e) => {
@@ -42,7 +42,7 @@ function ExpenseForm({ initial = {}, onSave, onCancel, saving }) {
     onSave({
       ...form,
       amount: parseFloat(form.amount),
-      date: new Date(form.date).toISOString(),
+      date: new Date(form.date + 'T00:00:00').toISOString(),
     })
   }
 
@@ -102,7 +102,7 @@ function ExpenseForm({ initial = {}, onSave, onCancel, saving }) {
         <div>
           <label className="block text-xs font-medium text-slate-400 mb-1.5">Date *</label>
           <input
-            type="datetime-local"
+            type="date"
             required
             value={form.date}
             onChange={(e) => setForm({ ...form, date: e.target.value })}

@@ -46,7 +46,10 @@ function App() {
     <BrowserRouter>
       <div className="flex h-screen overflow-hidden bg-surface-950">
         {/* ── Sidebar Navigation (always visible) ── */}
-        <Sidebar />
+        <Sidebar onLogout={() => {
+          localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
+          setLoggedIn(false)
+        }} />
 
         {/* ── Main Content Area ── */}
         <main className="flex-1 overflow-y-auto">

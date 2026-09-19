@@ -41,6 +41,16 @@ def get_monthly_trends(
     return analytics_service.get_monthly_trends(db, user_id=current_user.id, months=months)
 
 
+@analytics_router.get("/daily")
+def get_daily_trends(
+    days: int = Query(default=30, ge=1, le=90),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Get day-by-day spending for the last N days (for the trend chart)."""
+    return analytics_service.get_daily_trends(db, user_id=current_user.id, days=days)
+
+
 @analytics_router.get("/categories")
 def get_category_breakdown(
     months: int = Query(default=1, ge=1, le=24),

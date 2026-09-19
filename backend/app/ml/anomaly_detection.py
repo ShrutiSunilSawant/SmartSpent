@@ -41,7 +41,7 @@ class AnomalyDetector:
     - For production, you'd cache and retrain periodically
     """
 
-    def __init__(self, contamination: float = 0.05):
+    def __init__(self, contamination: float = 0.1):
         """
         Args:
             contamination: Expected fraction of anomalies (0.05 = 5%).
@@ -114,7 +114,7 @@ class AnomalyDetector:
             True if the expense is unusual, False if it looks normal
         """
         # Need at least some history to detect anomalies
-        if len(historical_expenses) < 10:
+        if len(historical_expenses) < 5:
             logger.debug("Not enough history for anomaly detection (need 10+ expenses)")
             return False
 

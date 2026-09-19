@@ -119,6 +119,38 @@ class AnalyticsService:
             for r in results
         ]
 
+    def get_daily_trends(self, db: Session, user_id: int, days: int = 30) -> List[Dict[str, Any]]:
+        """
+        Get daily spending totals for the last N days.
+        Used for the "Monthly Spending Trend" chart so each day is its own point.
+        Returns: [{"day": "2026-09-01", "total": 87.50, "count": 1}, ...]
+        """
+        cutoff = datetime.now() - timedelta(days=days)
+
+        results = (
+            db.query(
+                extract("year", Expense.date).label("year"),
+                extract("month", Expense.date).label("month"),
+                extract("day", Expense.date).label("day"),
+                func.sum(Expense.amount).label("total"),
+                func.count(Expense.id).label("count"),
+            )
+            .filter(Expense.user_id == user_id, Expense.date >= cutoff)
+            .group_by("year", "month", "day")
+            .order_by("year", "month", "day")
+            .all()
+        )
+
+        return [
+            {
+                "day": f"{int(r.year)}-{int(r.month):02d}-{int(r.day):02d}",
+                "label": f"Sep {int(r.day)}" if int(r.month) == 9 else f"{int(r.month)}/{int(r.day)}",
+                "total": round(float(r.total), 2),
+                "count": r.count,
+            }
+            for r in results
+        ]
+
     def get_category_breakdown(self, db: Session, user_id: int, months: int = 1) -> List[Dict[str, Any]]:
         """
         Get spending by category for pie/donut charts.

@@ -102,7 +102,7 @@ export default function Dashboard() {
       try {
         const [sum, trend, cats, anom, ins, recent] = await Promise.allSettled([
           analyticsApi.summary(1),
-          analyticsApi.trends(6),
+          analyticsApi.daily(30),
           analyticsApi.categories(1),
           analyticsApi.anomalies(5),
           analyticsApi.insights(),
@@ -192,7 +192,7 @@ export default function Dashboard() {
         >
           <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
             <TrendingUp size={16} className="text-brand-400" />
-            Monthly Spending Trend
+            Spending This Month (Daily)
           </h2>
           <ResponsiveContainer width="100%" height={220}>
             <AreaChart data={trends} margin={{ left: -10 }}>
@@ -203,7 +203,7 @@ export default function Dashboard() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-              <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
+              <XAxis dataKey="label" tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#64748b', fontSize: 11 }} axisLine={false} tickLine={false}
                 tickFormatter={(v) => `$${v}`} />
               <Tooltip

@@ -85,7 +85,7 @@ export const expenseApi = {
   get: (id) => api.get(`/expenses/${id}`),
 
   /** Create a new expense */
-  create: (data) => api.post('/expenses', data),
+  create: (data) => api.post('/expenses/', data),
 
   /** Update an expense (partial update) */
   update: (id, data) => api.put(`/expenses/${id}`, data),
@@ -101,6 +101,9 @@ export const analyticsApi = {
 
   /** Get monthly trends for charts */
   trends: (months = 6) => api.get('/analytics/trends', { params: { months } }),
+
+  /** Get daily spending for the last N days (for the trend chart) */
+  daily: (days = 30) => api.get('/analytics/daily', { params: { days } }),
 
   /** Get category breakdown */
   categories: (months = 1) => api.get('/analytics/categories', { params: { months } }),

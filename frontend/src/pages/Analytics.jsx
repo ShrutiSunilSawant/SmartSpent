@@ -1,22 +1,13 @@
-/**
- * Analytics.jsx — fixed to match actual backend response shapes:
- *   /analytics/trends    → [{month, total, count}]          (plain list)
- *   /analytics/categories→ [{category, total, percentage}]  (plain list)
- *   /analytics/anomalies → [{id, amount, category, ...}]    (plain list)
- *   /analytics/insights  → {insights: ["string", ...]}
- *   /analytics/summary   → {total, count, by_category, ...}
- */
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  BarChart, Bar, PieChart, Pie, Cell,
+  BarChart, Bar, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   AreaChart, Area,
 } from "recharts";
 import {
   TrendingUp, TrendingDown, AlertTriangle, Tag,
-  DollarSign, Calendar, RefreshCw,
+  DollarSign, Calendar, RefreshCw, Shield,
 } from "lucide-react";
 import { analyticsApi, forecastingApi } from "../services/api";
 
@@ -55,10 +46,11 @@ const StatCard = ({ icon:Icon, label, value, sub, color="brand" }) => (
 
 export default function Analytics() {
   const [summary,setSummary]       = useState(null);
-  const [trends,setTrends]         = useState([]);
+  const [daily,setDaily]           = useState([]);
   const [categories,setCategories] = useState([]);
   const [anomalies,setAnomalies]   = useState([]);
   const [forecast,setForecast]     = useState([]);
+  const [forecastSummary,setForecastSummary] = useState(null);
   const [insights,setInsights]     = useState([]);
   const [loading,setLoading]       = useState(true);
   const [error,setError]           = useState(null);
@@ -67,19 +59,22 @@ export default function Analytics() {
   const fetchAll = async () => {
     try {
       setError(null);
-      const [sumRes,trendRes,catRes,anomRes,fcastRes,insRes] = await Promise.allSettled([
+      const [sumRes,dailyRes,catRes,anomRes,fcastRes,insRes] = await Promise.allSettled([
         analyticsApi.summary(),
-        analyticsApi.trends(),
+        analyticsApi.daily(30),
         analyticsApi.categories(),
         analyticsApi.anomalies(),
-        forecastingApi.predict(90),
+        forecastingApi.predict(30),
         analyticsApi.insights(),
       ]);
       if (sumRes.status==="fulfilled")   setSummary(sumRes.value);
-      if (trendRes.status==="fulfilled") setTrends(trendRes.value || []);
+      if (dailyRes.status==="fulfilled") setDaily(dailyRes.value || []);
       if (catRes.status==="fulfilled")   setCategories(catRes.value || []);
       if (anomRes.status==="fulfilled")  setAnomalies(anomRes.value || []);
-      if (fcastRes.status==="fulfilled") setForecast(fcastRes.value?.predictions || []);
+      if (fcastRes.status==="fulfilled") {
+        setForecast(fcastRes.value?.predictions || []);
+        setForecastSummary(fcastRes.value?.summary || null);
+      }
       if (insRes.status==="fulfilled")   setInsights(insRes.value?.insights || []);
     } catch(err) {
       setError("Failed to load analytics data.");
@@ -102,12 +97,12 @@ export default function Analytics() {
   );
 
   const totalSpent  = summary?.total ?? 0;
-  const avgMonthly  = trends.length ? trends.reduce((a,b)=>a+b.total,0)/trends.length : 0;
   const topCategory = categories[0]?.category ?? "—";
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
 
+      {/* Header */}
       <motion.div initial={{opacity:0,y:-10}} animate={{opacity:1,y:0}}
         className="flex items-center justify-between">
         <div>
@@ -121,62 +116,56 @@ export default function Analytics() {
 
       {error && <div className="glass-card p-4 border border-red-500/30 text-red-400 text-sm">{error}</div>}
 
+      {/* Stat Cards */}
       <motion.div variants={container} initial="hidden" animate="show"
         className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={DollarSign} label="Total Spent" value={`$${totalSpent.toFixed(2)}`} sub="All time" color="brand"/>
-        <StatCard icon={Calendar} label="Monthly Average" value={`$${avgMonthly.toFixed(2)}`} sub={`Over ${trends.length} months`} color="purple"/>
+        <StatCard icon={DollarSign} label="Total Spent" value={`$${totalSpent.toFixed(2)}`} sub="This month" color="brand"/>
+        <StatCard icon={Calendar} label="Transactions" value={summary?.count ?? 0} sub="This month" color="purple"/>
         <StatCard icon={Tag} label="Top Category" value={topCategory} sub={categories[0]?`$${categories[0].total.toFixed(2)}`:""} color="pink"/>
         <StatCard icon={AlertTriangle} label="Anomalies" value={anomalies.length} sub="Unusual transactions" color="amber"/>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div initial={{opacity:0,x:-20}} animate={{opacity:1,x:0}} transition={{delay:0.2}} className="glass-card p-5">
-          <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <TrendingUp size={16} className="text-brand-400"/> Monthly Spending
-          </h2>
-          {trends.length===0 ? (
-            <div className="h-56 flex items-center justify-center text-gray-500 text-sm">No trend data yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={trends} margin={{top:4,right:10,left:-10,bottom:0}}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08"/>
-                <XAxis dataKey="month" tick={{fill:"#9ca3af",fontSize:11}}/>
-                <YAxis tick={{fill:"#9ca3af",fontSize:11}}/>
-                <Tooltip content={<CustomTooltip/>}/>
-                <Bar dataKey="total" fill="#6366f1" radius={[4,4,0,0]} name="Spent"/>
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-
-        <motion.div initial={{opacity:0,x:20}} animate={{opacity:1,x:0}} transition={{delay:0.25}} className="glass-card p-5">
-          <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <Tag size={16} className="text-purple-400"/> Category Breakdown
-          </h2>
-          {categories.length===0 ? (
-            <div className="h-56 flex items-center justify-center text-gray-500 text-sm">No category data yet</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={220}>
-              <PieChart>
-                <Pie data={categories} dataKey="total" nameKey="category"
-                  cx="50%" cy="50%" outerRadius={80} innerRadius={40} paddingAngle={3}
-                  label={({category,percentage})=>`${category} ${percentage}%`} labelLine={false}>
-                  {categories.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
-                </Pie>
-                <Tooltip formatter={(val)=>[`$${val.toFixed(2)}`,"Amount"]}/>
-              </PieChart>
-            </ResponsiveContainer>
-          )}
-        </motion.div>
-      </div>
-
-      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.3}} className="glass-card p-5">
-        <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-          <TrendingUp size={16} className="text-emerald-400"/> Spending Forecast
+      {/* Daily Spending Chart */}
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.15}} className="glass-card p-5">
+        <h2 className="text-white font-semibold mb-1 flex items-center gap-2">
+          <TrendingUp size={16} className="text-brand-400"/> Daily Spending (Last 30 Days)
         </h2>
-        {forecast.length===0 ? (
-          <div className="h-48 flex items-center justify-center text-gray-500 text-sm">
-            Not enough data for forecast — add more expenses first
+        <p className="text-xs text-gray-500 mb-4">Each bar is one day's total spending</p>
+        {daily.length === 0 ? (
+          <div className="h-56 flex items-center justify-center text-gray-500 text-sm">No spending data yet</div>
+        ) : (
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={daily} margin={{top:4,right:10,left:-10,bottom:0}}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08"/>
+              <XAxis dataKey="label" tick={{fill:"#9ca3af",fontSize:11}}/>
+              <YAxis tick={{fill:"#9ca3af",fontSize:11}} tickFormatter={v=>`$${v}`}/>
+              <Tooltip content={<CustomTooltip/>}/>
+              <Bar dataKey="total" fill="#6366f1" radius={[4,4,0,0]} name="Spent"/>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
+      </motion.div>
+
+
+      {/* Spending Forecast */}
+      <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.25}} className="glass-card p-5">
+        <div className="flex items-start justify-between mb-1">
+          <h2 className="text-white font-semibold flex items-center gap-2">
+            <TrendingUp size={16} className="text-emerald-400"/> Spending Forecast (Next 30 Days)
+          </h2>
+          {forecastSummary && (
+            <span className="text-xs px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              {forecastSummary.method || 'ML'} model
+            </span>
+          )}
+        </div>
+        <p className="text-xs text-gray-500 mb-4">
+          Predicted daily spending based on your historical patterns.
+          {forecastSummary && ` Estimated total: $${forecastSummary.total_predicted?.toFixed(2)}`}
+        </p>
+        {forecast.length === 0 ? (
+          <div className="h-48 flex items-center justify-center text-gray-500 text-sm text-center px-8">
+            Not enough data for forecast — add at least 7 expenses on different days first
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={200}>
@@ -188,31 +177,35 @@ export default function Analytics() {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08"/>
-              <XAxis dataKey="date" tick={{fill:"#9ca3af",fontSize:11}}/>
-              <YAxis tick={{fill:"#9ca3af",fontSize:11}}/>
+              <XAxis dataKey="date" tick={{fill:"#9ca3af",fontSize:10}}
+                tickFormatter={d => d ? d.slice(5) : ''} interval="preserveStartEnd"/>
+              <YAxis tick={{fill:"#9ca3af",fontSize:11}} tickFormatter={v=>`$${v}`}/>
               <Tooltip content={<CustomTooltip/>}/>
-              <Area type="monotone" dataKey="predicted_amount" stroke="#10b981" strokeWidth={2} fill="url(#fg)" name="Forecast"/>
+              <Area type="monotone" dataKey="predicted" stroke="#10b981" strokeWidth={2}
+                fill="url(#fg)" name="Forecast"/>
             </AreaChart>
           </ResponsiveContainer>
         )}
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.35}} className="glass-card p-5">
-          <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
+        {/* Anomalies */}
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.3}} className="glass-card p-5">
+          <h2 className="text-white font-semibold mb-1 flex items-center gap-2">
             <AlertTriangle size={16} className="text-amber-400"/> Anomalous Expenses
           </h2>
+
           {anomalies.length===0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-gray-500 text-sm gap-2">
-              <AlertTriangle size={28} className="text-gray-700"/>
-              No anomalies detected — great job!
+            <div className="flex flex-col items-center justify-center py-8 text-gray-500 text-sm gap-2">
+              <Shield size={28} className="text-gray-700"/>
+              No anomalies detected — spending looks normal!
             </div>
           ) : (
-            <div className="space-y-2 max-h-64 overflow-y-auto">
+            <div className="space-y-2 max-h-56 overflow-y-auto">
               {anomalies.map((a)=>(
                 <div key={a.id} className="flex items-center justify-between p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
                   <div>
-                    <p className="text-white text-sm font-medium">{a.merchant}</p>
+                    <p className="text-white text-sm font-medium">{a.merchant || 'Unknown'}</p>
                     <p className="text-gray-500 text-xs">{a.category} · {a.date?.slice(0,10)}</p>
                   </div>
                   <span className="text-amber-400 font-bold text-sm">${Number(a.amount).toFixed(2)}</span>
@@ -222,12 +215,14 @@ export default function Analytics() {
           )}
         </motion.div>
 
-        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.4}} className="glass-card p-5">
-          <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-            <TrendingDown size={16} className="text-blue-400"/> AI Savings Insights
+        {/* Insights */}
+        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.35}} className="glass-card p-5">
+          <h2 className="text-white font-semibold mb-1 flex items-center gap-2">
+            <TrendingDown size={16} className="text-blue-400"/> Savings Insights
           </h2>
+          <p className="text-xs text-gray-500 mb-4">Rule-based tips from your spending patterns</p>
           {insights.length===0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-gray-500 text-sm gap-2">
+            <div className="flex flex-col items-center justify-center py-8 text-gray-500 text-sm gap-2">
               <TrendingDown size={28} className="text-gray-700"/>
               Add more expenses to unlock insights
             </div>
@@ -242,23 +237,6 @@ export default function Analytics() {
           )}
         </motion.div>
       </div>
-
-      {categories.length>0 && (
-        <motion.div initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:0.45}} className="glass-card p-5">
-          <h2 className="text-white font-semibold mb-4">Spending by Category</h2>
-          <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={categories} layout="vertical" margin={{top:4,right:20,left:60,bottom:0}}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" horizontal={false}/>
-              <XAxis type="number" tick={{fill:"#9ca3af",fontSize:11}}/>
-              <YAxis type="category" dataKey="category" tick={{fill:"#9ca3af",fontSize:11}} width={60}/>
-              <Tooltip content={<CustomTooltip/>}/>
-              <Bar dataKey="total" name="Spent" radius={[0,4,4,0]}>
-                {categories.map((_,i)=><Cell key={i} fill={COLORS[i%COLORS.length]}/>)}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </motion.div>
-      )}
     </div>
   );
 }
