@@ -236,17 +236,16 @@ export default function Landing() {
                 transition={{ duration: 0.6, delay: 0.1 }}
                 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.12] mb-6"
               >
-                Your AI Finance{' '}
                 <span style={{
                   background: 'linear-gradient(135deg, #818cf8 0%, #a5b4fc 40%, #6366f1 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text',
                 }}>
-                  Copilot.
+                  SmartSpent.
                 </span>
                 <br />
-                100% Private.
+                Your AI Finance Copilot.
               </motion.h1>
 
               <motion.p

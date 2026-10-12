@@ -31,11 +31,6 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
     }
   }
 
-  const strength = password.length === 0 ? 0 : password.length < 8 ? 1 : password.length < 12 ? 2 : 3
-  const strengthLabel = ['', 'Weak', 'Good', 'Strong']
-  const strengthColor = ['', 'bg-red-500', 'bg-yellow-400', 'bg-green-500']
-  const strengthText  = ['', 'text-red-400', 'text-yellow-400', 'text-green-400']
-
   return (
     <div className="flex h-screen w-full overflow-hidden bg-surface-950">
 
@@ -131,17 +126,6 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
                 </button>
               </div>
 
-              {/* strength bar */}
-              {password.length > 0 && (
-                <div className="space-y-1.5 pt-1">
-                  <div className="flex gap-1.5">
-                    {[1,2,3].map(i => (
-                      <div key={i} className={`h-1.5 flex-1 rounded-full transition-all duration-300 ${i <= strength ? strengthColor[strength] : 'bg-surface-700'}`} />
-                    ))}
-                  </div>
-                  <p className={`text-sm font-medium ${strengthText[strength]}`}>{strengthLabel[strength]} password</p>
-                </div>
-              )}
             </div>
 
             {error && (
