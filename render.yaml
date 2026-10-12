@@ -3,7 +3,7 @@ services:
     name: smartspent-api
     runtime: python
     rootDir: backend
-    buildCommand: apt-get install -y tesseract-ocr && pip install -r requirements.txt
+    buildCommand: apt-get update && apt-get install -y tesseract-ocr libgl1 && pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     plan: free
     envVars:
@@ -23,3 +23,5 @@ services:
         value: "INFO"
       - key: CHROMA_PERSIST_DIR
         value: ""            # Empty = in-memory ChromaDB (filesystem is ephemeral on free tier)
+      - key: TESSERACT_PATH
+        value: "/usr/bin/tesseract"
