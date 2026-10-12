@@ -38,10 +38,10 @@ class AIService:
                 from langchain_groq import ChatGroq
                 self.llm = ChatGroq(
                     api_key=settings.groq_api_key,
-                    model="llama3-8b-8192",
+                    model="llama-3.3-70b-versatile",
                     temperature=0.7,
                 )
-                logger.info("Groq LLM initialized (llama3-8b-8192)")
+                logger.info("Groq LLM initialized (llama-3.3-70b-versatile)")
             else:
                 from langchain_community.llms import Ollama
                 self.llm = Ollama(
