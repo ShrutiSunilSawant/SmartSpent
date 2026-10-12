@@ -12,6 +12,7 @@ uvicorn[standard]
 # --- Database ---
 sqlalchemy
 psycopg2-binary
+psycopg[binary]
 
 # --- Data Validation ---
 pydantic>=2.0
