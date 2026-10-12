@@ -15,7 +15,6 @@ This is the "entry point" for all AI functionality.
 The API route calls this service, which handles all the complexity.
 """
 
-from langchain_community.llms import Ollama
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any
 
@@ -33,17 +32,27 @@ class AIService:
     """Manages the AI financial assistant lifecycle."""
 
     def __init__(self):
-        """Initialize the Ollama LLM connection."""
+        """Initialize the LLM — Groq (cloud) if configured, else Ollama (local)."""
         try:
-            self.llm = Ollama(
-                base_url=settings.ollama_base_url,
-                model=settings.ollama_model,
-                temperature=0.7,  # Some creativity in responses
-                timeout=300,      # 5 minutes — phi3 on CPU can be slow
-            )
-            logger.info("Ollama LLM initialized: model={}", settings.ollama_model)
+            if settings.groq_api_key:
+                from langchain_groq import ChatGroq
+                self.llm = ChatGroq(
+                    api_key=settings.groq_api_key,
+                    model="llama-3.1-8b-instant",
+                    temperature=0.7,
+                )
+                logger.info("Groq LLM initialized (llama-3.1-8b-instant)")
+            else:
+                from langchain_community.llms import Ollama
+                self.llm = Ollama(
+                    base_url=settings.ollama_base_url,
+                    model=settings.ollama_model,
+                    temperature=0.7,
+                    timeout=300,
+                )
+                logger.info("Ollama LLM initialized: model={}", settings.ollama_model)
         except Exception as e:
-            logger.error("Failed to initialize Ollama: {}", str(e))
+            logger.error("Failed to initialize LLM: {}", str(e))
             self.llm = None
 
     def chat(
@@ -68,12 +77,11 @@ class AIService:
         if not self.llm:
             return {
                 "response": (
-                    "⚠️ AI service is unavailable. Please ensure Ollama is running:\n"
-                    "1. Download Ollama from https://ollama.com\n"
-                    "2. Run: `ollama serve`\n"
-                    f"3. Pull the model: `ollama pull {settings.ollama_model}`"
+                    "⚠️ AI service is unavailable. "
+                    + ("Set GROQ_API_KEY in environment variables to enable it." if not settings.groq_api_key
+                       else f"Please ensure Ollama is running: `ollama serve` then `ollama pull {settings.ollama_model}`")
                 ),
-                "thinking_steps": ["Ollama not available"],
+                "thinking_steps": ["LLM not available"],
                 "tools_used": [],
             }
 

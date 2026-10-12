@@ -19,9 +19,9 @@ export const AUTH_TOKEN_STORAGE_KEY = 'smartspent_auth_token'
 
 // ─── Axios Instance ────────────────────────────────────────────────────────────
 const api = axios.create({
-  // In dev, Vite proxies /api to localhost:8001 (see vite.config.js)
-  // In production, change this to your deployed API URL
-  baseURL: '/api',
+  // In dev, Vite proxies /api to localhost backend (see vite.config.js).
+  // In production, set VITE_API_URL to your Render backend URL.
+  baseURL: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api',
   headers: {
     'Content-Type': 'application/json',
   },

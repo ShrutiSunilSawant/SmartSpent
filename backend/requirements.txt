@@ -21,9 +21,10 @@ email-validator
 # --- AI / LangChain ---
 langchain
 langchain-community
+langchain-groq
 langgraph
 
-# --- Local LLM ---
+# --- Local LLM (optional, used when GROQ_API_KEY is not set) ---
 ollama
 
 # --- Vector Memory ---
@@ -31,7 +32,7 @@ chromadb
 
 # --- OCR ---
 pytesseract
-opencv-python
+opencv-python-headless
 Pillow
 
 # --- Machine Learning ---

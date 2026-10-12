@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: smartspent-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # Set this in the Render dashboard (from Neon)
+      - key: JWT_SECRET
+        sync: false          # Set a strong random value in the Render dashboard
+      - key: GROQ_API_KEY
+        sync: false          # Set this in the Render dashboard (from groq.com)
+      - key: FRONTEND_URL
+        sync: false          # Set to your Vercel URL after frontend is deployed
+      - key: APP_URL
+        sync: false          # Set to your Render backend URL
+      - key: DEBUG
+        value: "false"
+      - key: LOG_LEVEL
+        value: "INFO"
+      - key: CHROMA_PERSIST_DIR
+        value: ""            # Empty = in-memory ChromaDB (filesystem is ephemeral on free tier)

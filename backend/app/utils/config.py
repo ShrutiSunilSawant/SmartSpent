@@ -43,7 +43,10 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql://localhost/smartspent"
 
-    # Ollama — local LLM server
+    # Groq — cloud LLM (free tier, replaces Ollama in production)
+    groq_api_key: str = ""
+
+    # Ollama — local LLM server (used when GROQ_API_KEY is not set)
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "qwen2.5:3b"
 
@@ -85,7 +88,16 @@ def _ensure_jwt_secret(env_path: Path = Path(".env")) -> None:
     Generate a random JWT-signing secret on first run and persist it to
     .env so it's stable across restarts. Without this, every restart would
     invalidate every logged-in user's session.
+
+    On cloud deployments (Render etc.) JWT_SECRET is set as an environment
+    variable directly — skip writing to disk in that case, since the
+    filesystem is ephemeral and a newly generated secret would log everyone
+    out on every restart.
     """
+    import os
+    if os.environ.get("JWT_SECRET"):
+        return
+
     if not env_path.exists():
         env_path.touch()
 

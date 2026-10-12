@@ -44,11 +44,17 @@ class FinancialMemory:
     def __init__(self):
         """Initialize ChromaDB client and create collections."""
         try:
-            # Persistent client — data survives app restarts
-            self.client = chromadb.PersistentClient(
-                path=settings.chroma_persist_dir,
-                settings=ChromaSettings(anonymized_telemetry=False),
-            )
+            # Use persistent storage locally; fall back to in-memory on cloud
+            # (Render free tier has an ephemeral filesystem, so persistence is a no-op there)
+            if settings.chroma_persist_dir:
+                self.client = chromadb.PersistentClient(
+                    path=settings.chroma_persist_dir,
+                    settings=ChromaSettings(anonymized_telemetry=False),
+                )
+            else:
+                self.client = chromadb.EphemeralClient(
+                    settings=ChromaSettings(anonymized_telemetry=False),
+                )
 
             # Create collections (or load if they exist)
             self.conversations = self.client.get_or_create_collection(

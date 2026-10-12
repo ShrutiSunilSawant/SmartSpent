@@ -47,7 +47,6 @@ Why LangGraph vs simple LangChain?
 
 from typing import TypedDict, List, Optional, Annotated
 from langgraph.graph import StateGraph, END
-from langchain_community.llms import Ollama
 from langchain_core.messages import HumanMessage, SystemMessage
 import json
 
@@ -265,18 +264,18 @@ def generate_response_node(state: FinancialAgentState, llm) -> FinancialAgentSta
         messages.append(f"User: {state['user_query']}")
         conversation_text = "\n".join(messages)
 
-        # Call the local Ollama LLM
-        full_prompt = f"{system_prompt}\n\n{conversation_text}\n\nAssistant:"
-        response = llm.invoke(full_prompt)
-
-        state["final_response"] = response.strip()
+        # Call the LLM — supports both chat models (Groq) and plain LLMs (Ollama)
+        messages = [SystemMessage(content=system_prompt), HumanMessage(content=conversation_text)]
+        result = llm.invoke(messages)
+        # ChatGroq returns AIMessage with .content; Ollama returns a plain string
+        raw = result.content if hasattr(result, "content") else result
+        state["final_response"] = raw.strip()
         state["thinking_steps"].append("✅ Generated response")
 
     except Exception as e:
         logger.error("Response generation failed: {}", str(e))
         state["final_response"] = (
             "I encountered an error while analyzing your finances. "
-            "Please make sure Ollama is running with `ollama serve` and the model is downloaded. "
             f"Error: {str(e)}"
         )
         state["error"] = str(e)
