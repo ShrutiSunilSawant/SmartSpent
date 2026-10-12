@@ -97,7 +97,7 @@ export default function Analytics() {
   );
 
   const totalSpent  = summary?.total ?? 0;
-  const topCategory = categories[0]?.category ?? "—";
+  const topCategory = categories[0]?.category ?? "N/A";
 
   return (
     <div className="p-6 space-y-6 max-w-7xl mx-auto">
@@ -165,7 +165,7 @@ export default function Analytics() {
         </p>
         {forecast.length === 0 ? (
           <div className="h-48 flex items-center justify-center text-gray-500 text-sm text-center px-8">
-            Not enough data for forecast — add at least 7 expenses on different days first
+            Not enough data for a forecast. Add at least 7 expenses on different days first.
           </div>
         ) : (
           <ResponsiveContainer width="100%" height={200}>
@@ -198,7 +198,7 @@ export default function Analytics() {
           {anomalies.length===0 ? (
             <div className="flex flex-col items-center justify-center py-8 text-gray-500 text-sm gap-2">
               <Shield size={28} className="text-gray-700"/>
-              No anomalies detected — spending looks normal!
+              No anomalies detected. Spending looks normal!
             </div>
           ) : (
             <div className="space-y-2 max-h-56 overflow-y-auto">

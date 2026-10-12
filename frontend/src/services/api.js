@@ -56,8 +56,14 @@ api.interceptors.response.use(
 
 // ─── Auth API ──────────────────────────────────────────────────────────────────
 export const authApi = {
-  /** Create an account. Returns { access_token, token_type } */
+  /** Create an account. Returns { access_token } — user is logged in immediately */
   register: (email, password) => api.post('/auth/register', { email, password }),
+
+  /** Send a password reset email */
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+
+  /** Set a new password using the reset token */
+  resetPassword: (token, password) => api.post('/auth/reset-password', { token, password }),
 
   /**
    * Login. The backend uses OAuth2's standard form encoding (not JSON),
@@ -74,6 +80,13 @@ export const authApi = {
 
   /** Get the logged-in user's profile */
   me: () => api.get('/auth/me'),
+
+  /** Change password (requires current password) */
+  changePassword: (currentPassword, newPassword) =>
+    api.post('/auth/change-password', { current_password: currentPassword, new_password: newPassword }),
+
+  /** Update profile fields (phone_number) */
+  updateProfile: (data) => api.patch('/auth/me', data),
 }
 
 // ─── Expense API ───────────────────────────────────────────────────────────────

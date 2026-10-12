@@ -283,9 +283,7 @@ export default function Assistant() {
             )}
           </button>
         </div>
-        <p className="text-xs text-slate-700 text-center mt-2">
-          Responses generated locally by Ollama · Data never leaves your machine
-        </p>
+
       </div>
     </div>
   )

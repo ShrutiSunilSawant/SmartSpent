@@ -136,7 +136,7 @@ export default function OCR() {
           Receipt & Invoice Scanner
         </h1>
         <p className="text-gray-400 text-sm mt-1">
-          Upload a receipt or PDF invoice — AI extracts amount, merchant, and date automatically.
+          Upload a receipt or PDF invoice. AI extracts the amount, merchant, and date automatically.
         </p>
       </motion.div>
 

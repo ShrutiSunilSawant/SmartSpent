@@ -26,10 +26,12 @@ from app.utils.logger import logger
 # ─── Engine ──────────────────────────────────────────────────────────────────
 # connect_args={"check_same_thread": False} is required for SQLite
 # because FastAPI uses multiple threads and SQLite has threading restrictions.
+# check_same_thread is only required for SQLite
+_connect_args = {"check_same_thread": False} if settings.database_url.startswith("sqlite") else {}
 engine = create_engine(
     settings.database_url,
-    connect_args={"check_same_thread": False},
-    echo=settings.debug,  # Print SQL queries in debug mode
+    connect_args=_connect_args,
+    echo=settings.debug,
 )
 
 # ─── Session Factory ──────────────────────────────────────────────────────────

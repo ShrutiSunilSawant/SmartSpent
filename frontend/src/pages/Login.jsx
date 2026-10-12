@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { TrendingUp } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { authApi, AUTH_TOKEN_STORAGE_KEY } from '@/services/api'
 
 export default function Login({ onSuccess, onSwitchToRegister }) {
@@ -78,7 +79,7 @@ export default function Login({ onSuccess, onSwitchToRegister }) {
             <p className="mt-2 text-base text-slate-400">Sign in to your account to continue</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
 
             {/* email */}
             <div className="space-y-2">
@@ -92,6 +93,7 @@ export default function Login({ onSuccess, onSwitchToRegister }) {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
+                  autoComplete="off"
                   autoFocus
                   className="w-full rounded-xl bg-surface-800 border border-white/8 pl-12 pr-4 py-3.5 text-base text-white placeholder-slate-500 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30"
                 />
@@ -110,6 +112,7 @@ export default function Login({ onSuccess, onSwitchToRegister }) {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Your password"
+                  autoComplete="new-password"
                   className="w-full rounded-xl bg-surface-800 border border-white/8 pl-12 pr-12 py-3.5 text-base text-white placeholder-slate-500 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30"
                 />
                 <button type="button" onClick={() => setShowPw(v => !v)} tabIndex={-1}
@@ -130,6 +133,12 @@ export default function Login({ onSuccess, onSwitchToRegister }) {
                 <p className="text-sm text-red-300">{error}</p>
               </div>
             )}
+
+            <div className="flex justify-end">
+              <Link to="/forgot-password" className="text-xs text-slate-500 hover:text-slate-300 transition">
+                Forgot password?
+              </Link>
+            </div>
 
             <button type="submit" disabled={submitting}
               className="w-full rounded-xl bg-primary-600 px-4 py-4 text-base font-bold text-white shadow-lg shadow-primary-600/30 transition hover:bg-primary-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2">

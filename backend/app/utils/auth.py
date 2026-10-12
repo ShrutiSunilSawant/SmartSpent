@@ -39,9 +39,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     )
 
 
-def create_access_token(user_id: int) -> str:
+def create_access_token(user_id: int, token_version: int = 0) -> str:
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_expires_minutes)
-    payload = {"sub": str(user_id), "exp": expire}
+    payload = {"sub": str(user_id), "exp": expire, "ver": token_version}
     return jwt.encode(payload, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
@@ -59,11 +59,16 @@ def get_current_user(
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[settings.jwt_algorithm])
         user_id = int(payload.get("sub"))
+        token_ver = int(payload.get("ver", 0))
     except (jwt.PyJWTError, TypeError, ValueError):
         raise credentials_error
 
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
+        raise credentials_error
+
+    # Reject tokens issued before the last password change
+    if user.token_version != token_ver:
         raise credentials_error
 
     return user

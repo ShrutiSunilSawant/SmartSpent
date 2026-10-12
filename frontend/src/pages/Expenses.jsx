@@ -136,6 +136,59 @@ function ExpenseForm({ initial = {}, onSave, onCancel, saving }) {
   )
 }
 
+// ── Inline Toast ───────────────────────────────────────────────────────────────
+function Toast({ message, type, onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 4000)
+    return () => clearTimeout(t)
+  }, [onDismiss])
+  const isError = type === 'error'
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
+      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm mb-4
+        ${isError ? 'bg-red-500/10 border border-red-500/25 text-red-300' : 'bg-green-500/10 border border-green-500/20 text-green-300'}`}
+    >
+      {isError
+        ? <AlertTriangle size={14} className="flex-shrink-0" />
+        : <Check size={14} className="flex-shrink-0" />}
+      {message}
+    </motion.div>
+  )
+}
+
+// ── Delete Confirm Modal ────────────────────────────────────────────────────────
+function DeleteConfirm({ onConfirm, onCancel }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onCancel} />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 8 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.15 }}
+        className="relative z-10 w-full max-w-sm rounded-2xl border border-surface-700/60 bg-surface-900 shadow-2xl p-6"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-red-500/15 flex items-center justify-center flex-shrink-0">
+            <AlertTriangle size={18} className="text-red-400" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">Delete expense?</p>
+            <p className="text-xs text-slate-500 mt-0.5">This cannot be undone.</p>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={onConfirm} className="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-500 transition">
+            Delete
+          </button>
+          <button onClick={onCancel} className="flex-1 btn-ghost text-slate-400">
+            Cancel
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 // ── Main Expenses Page ─────────────────────────────────────────────────────────
 export default function Expenses() {
   const [expenses, setExpenses] = useState([])
@@ -147,6 +200,10 @@ export default function Expenses() {
   const [editingId, setEditingId] = useState(null)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [toast, setToast] = useState(null) // { type, message }
+
+  const showToast = (type, message) => setToast({ type, message })
 
   const loadExpenses = useCallback(async () => {
     setLoading(true)
@@ -177,7 +234,7 @@ export default function Expenses() {
       setShowAddForm(false)
       loadExpenses()
     } catch (err) {
-      alert('Failed to create expense: ' + err.message)
+      showToast('error', 'Failed to create expense: ' + err.message)
     } finally {
       setSaving(false)
     }
@@ -190,20 +247,20 @@ export default function Expenses() {
       setEditingId(null)
       loadExpenses()
     } catch (err) {
-      alert('Failed to update expense: ' + err.message)
+      showToast('error', 'Failed to update expense: ' + err.message)
     } finally {
       setSaving(false)
     }
   }
 
   const handleDelete = async (id) => {
-    if (!confirm('Delete this expense?')) return
+    setConfirmDeleteId(null)
     setDeletingId(id)
     try {
       await expenseApi.delete(id)
       loadExpenses()
     } catch (err) {
-      alert('Failed to delete: ' + err.message)
+      showToast('error', 'Failed to delete: ' + err.message)
     } finally {
       setDeletingId(null)
     }
@@ -211,6 +268,24 @@ export default function Expenses() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
+      {/* ── Toast ── */}
+      <AnimatePresence>
+        {toast && (
+          <Toast key="toast" type={toast.type} message={toast.message} onDismiss={() => setToast(null)} />
+        )}
+      </AnimatePresence>
+
+      {/* ── Delete Confirm ── */}
+      <AnimatePresence>
+        {confirmDeleteId && (
+          <DeleteConfirm
+            key="confirm"
+            onConfirm={() => handleDelete(confirmDeleteId)}
+            onCancel={() => setConfirmDeleteId(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {/* ── Header ── */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
         <h1 className="text-3xl font-display font-bold text-white mb-1">Expenses</h1>
@@ -331,7 +406,7 @@ export default function Expenses() {
                     </div>
                     <div>
                       <p className="text-sm text-slate-400">
-                        {expense.date ? format(new Date(expense.date), 'MMM d, yyyy') : '—'}
+                        {expense.date ? format(new Date(expense.date), 'MMM d, yyyy') : 'No date'}
                       </p>
                     </div>
                     <div className="text-right">
@@ -353,7 +428,7 @@ export default function Expenses() {
                         <Edit2 size={13} />
                       </button>
                       <button
-                        onClick={() => handleDelete(expense.id)}
+                        onClick={() => setConfirmDeleteId(expense.id)}
                         disabled={deletingId === expense.id}
                         className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-600/10 transition-colors disabled:opacity-50"
                       >

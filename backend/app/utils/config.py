@@ -40,8 +40,8 @@ class Settings(BaseSettings):
     debug: bool = False
     log_level: str = "INFO"
 
-    # Database — SQLite by default (no setup needed)
-    database_url: str = "sqlite:///./financial_copilot.db"
+    # Database
+    database_url: str = "postgresql://localhost/smartspent"
 
     # Ollama — local LLM server
     ollama_base_url: str = "http://localhost:11434"
@@ -55,6 +55,15 @@ class Settings(BaseSettings):
 
     # CORS — allowed frontend origins
     frontend_url: str = "http://localhost:5173"
+
+    # Email (Gmail SMTP)
+    email_host: str = "smtp.gmail.com"
+    email_port: int = 587
+    email_user: str = ""
+    email_password: str = ""
+
+    # App base URL — used in email verification / password reset links
+    app_url: str = "http://localhost:5174"
 
     # Secret used to sign login JWTs. Left blank by default;
     # _ensure_jwt_secret() generates and persists one into .env on first

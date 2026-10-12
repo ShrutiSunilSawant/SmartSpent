@@ -177,16 +177,6 @@ async def scan_receipt(
     Login is required (like every other route) even though this endpoint
     doesn't touch the database — it shouldn't be open to anonymous callers.
     """
-    # Validate file type
-    if file.content_type and not (
-        file.content_type.startswith("image/") or
-        file.content_type == "application/pdf"
-    ):
-        raise HTTPException(
-            status_code=400,
-            detail=f"File must be an image or PDF. Got: {file.content_type}",
-        )
-
     image_bytes = await file.read()
 
     if len(image_bytes) == 0:
@@ -194,6 +184,25 @@ async def scan_receipt(
 
     if len(image_bytes) > 20 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File too large (max 20MB)")
+
+    # Validate by actual magic bytes — not the client-supplied content-type which can be spoofed
+    MAGIC = {
+        b"\xff\xd8\xff": "JPEG",
+        b"\x89PNG": "PNG",
+        b"%PDF": "PDF",
+        b"RIFF": "WEBP",   # WEBP: RIFF....WEBP
+        b"II*\x00": "TIFF",
+        b"MM\x00*": "TIFF",
+        b"BM": "BMP",
+        b"GIF8": "GIF",
+    }
+    header = image_bytes[:12]
+    detected = next((fmt for sig, fmt in MAGIC.items() if header.startswith(sig)), None)
+    # Extra check: WEBP needs "WEBP" at byte 8
+    if detected == "WEBP" and image_bytes[8:12] != b"WEBP":
+        detected = None
+    if not detected:
+        raise HTTPException(status_code=400, detail="File must be a real image or PDF (JPEG, PNG, WEBP, TIFF, BMP, GIF).")
 
     result = ocr_service.process_receipt(image_bytes, filename=file.filename or "")
     return result

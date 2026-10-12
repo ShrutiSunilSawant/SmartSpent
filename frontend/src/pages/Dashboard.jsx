@@ -253,7 +253,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
           ) : (
             <div className="h-[220px] flex items-center justify-center text-slate-600 text-sm">
-              No data yet — add some expenses!
+              No data yet. Add some expenses!
             </div>
           )}
         </motion.div>

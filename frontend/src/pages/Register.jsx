@@ -80,10 +80,10 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
 
           <div className="mb-9">
             <h1 className="font-display text-3xl font-bold text-white">Create your account</h1>
-            <p className="mt-2 text-base text-slate-400">Your expenses are private — nobody else can see them</p>
+            <p className="mt-2 text-base text-slate-400">Your expenses are private. Nobody else can see them.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
 
             {/* email */}
             <div className="space-y-2">
@@ -97,6 +97,7 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
+                  autoComplete="off"
                   autoFocus
                   className="w-full rounded-xl bg-surface-800 border border-white/8 pl-12 pr-4 py-3.5 text-base text-white placeholder-slate-500 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30"
                 />
@@ -115,6 +116,7 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   placeholder="Min. 8 characters"
+                  autoComplete="new-password"
                   className="w-full rounded-xl bg-surface-800 border border-white/8 pl-12 pr-12 py-3.5 text-base text-white placeholder-slate-500 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-500/30"
                 />
                 <button type="button" onClick={() => setShowPw(v => !v)} tabIndex={-1}
