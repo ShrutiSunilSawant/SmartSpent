@@ -42,13 +42,29 @@ api.interceptors.request.use((config) => {
 // Centralized error handling
 api.interceptors.response.use(
   (response) => response.data,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401 && !error.config?.url?.includes('/auth/')) {
-      // Saved token is missing/expired — clear it and force back to the login screen
       localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY)
       window.location.reload()
     }
-    const message = error.response?.data?.detail || error.message || 'API request failed'
+
+    // Network error (no response) = server cold start on Render free tier.
+    // Retry once after 8 seconds.
+    if (!error.response && !error.config?._retried) {
+      error.config._retried = true
+      await new Promise(r => setTimeout(r, 8000))
+      return api(error.config)
+    }
+
+    // FastAPI Pydantic validation errors return detail as an array of objects.
+    const detail = error.response?.data?.detail
+    let message
+    if (Array.isArray(detail)) {
+      message = detail.map(e => e.msg || JSON.stringify(e)).join(', ')
+    } else {
+      message = detail || error.message || 'API request failed'
+    }
+
     console.error('API Error:', message, error.config?.url)
     throw new Error(message)
   }

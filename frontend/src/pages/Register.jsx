@@ -22,7 +22,10 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
       localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, access_token)
       onSuccess()
     } catch (err) {
-      setError(err.message || 'Registration failed')
+      const msg = err.message || 'Registration failed'
+      setError(msg.toLowerCase().includes('network') || msg.toLowerCase().includes('timeout')
+        ? 'Server is starting up (this takes ~30s on first load). Please try again.'
+        : msg)
     } finally {
       setSubmitting(false)
     }
