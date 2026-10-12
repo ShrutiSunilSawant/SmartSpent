@@ -77,13 +77,21 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Mobile toggle */}
-          <button
-            onClick={() => setMobileOpen(v => !v)}
-            className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition"
-          >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+          {/* Mobile: Sign In + hamburger */}
+          <div className="md:hidden flex items-center gap-2">
+            <Link to="/login" className="text-sm text-slate-300 hover:text-white transition-colors px-3 py-1.5">
+              Sign In
+            </Link>
+            <Link to="/register" className="text-sm font-semibold px-4 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white transition-all">
+              Sign Up
+            </Link>
+            <button
+              onClick={() => setMobileOpen(v => !v)}
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition"
+            >
+              {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
       </header>
 
