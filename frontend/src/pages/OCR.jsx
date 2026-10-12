@@ -287,7 +287,6 @@ export default function OCR() {
               </div>
               <div className="text-center">
                 <p className="text-white font-medium">Scanning…</p>
-                <p className="text-gray-500 text-xs mt-1">OpenCV → Tesseract → ML classifier</p>
               </div>
             </motion.div>
           )}
