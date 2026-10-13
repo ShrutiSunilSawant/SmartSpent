@@ -20,8 +20,8 @@ export default function VerifyEmail() {
     <div className="min-h-screen bg-surface-950 flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
         <Link to="/" className="inline-flex items-center gap-2.5 mb-10">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-            <TrendingUp size={16} className="text-white" />
+          <div className="w-8 h-8 rounded-xl bg-surface-800 border border-surface-600 flex items-center justify-center">
+            <span className="font-display font-bold text-brand-400 text-sm">$</span>
           </div>
           <span className="font-display font-bold text-white text-lg">SmartSpent</span>
         </Link>

@@ -44,8 +44,8 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-5 h-16 flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-lg shadow-brand-900/50 group-hover:scale-105 transition-transform">
-              <TrendingUp size={16} className="text-white" />
+            <div className="w-8 h-8 rounded-xl bg-surface-800 border border-surface-600 flex items-center justify-center shadow-lg shadow-brand-900/50 group-hover:scale-105 transition-transform">
+              <span className="font-display font-bold text-brand-400 text-sm">$</span>
             </div>
             <span className="font-display font-bold text-white text-base">SmartSpent</span>
           </Link>

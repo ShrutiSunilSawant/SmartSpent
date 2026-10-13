@@ -57,8 +57,8 @@ function AppShell({ onLogout }) {
           <Menu size={20} />
         </button>
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center">
-            <TrendingUp size={14} className="text-white" />
+          <div className="w-7 h-7 rounded-lg bg-surface-800 border border-surface-600 flex items-center justify-center">
+            <span className="font-display font-bold text-brand-400 text-sm">$</span>
           </div>
           <span className="font-display font-bold text-white text-sm">SmartSpent</span>
         </div>

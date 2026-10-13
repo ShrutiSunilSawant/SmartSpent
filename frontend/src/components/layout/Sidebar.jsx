@@ -52,8 +52,8 @@ export default function Sidebar({ onLogout, open, onClose }) {
         {/* ── Logo ── */}
         <div className="px-6 py-6 border-b border-surface-700/50 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-900/50">
-              <TrendingUp size={18} className="text-white" />
+            <div className="w-9 h-9 rounded-xl bg-surface-800 border border-surface-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-900/50">
+              <span className="font-display font-bold text-brand-400 text-base">$</span>
             </div>
             <div>
               <h1 className="font-display font-bold text-white text-base leading-tight">SmartSpent</h1>
