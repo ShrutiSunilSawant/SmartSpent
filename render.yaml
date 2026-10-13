@@ -9,8 +9,10 @@ services:
         sync: false          # Set this in the Render dashboard (from Neon)
       - key: JWT_SECRET
         sync: false          # Set a strong random value in the Render dashboard
+      - key: GEMINI_API_KEY
+        sync: false          # Set this in the Render dashboard (from aistudio.google.com)
       - key: GROQ_API_KEY
-        sync: false          # Set this in the Render dashboard (from groq.com)
+        sync: false          # Legacy — no longer used
       - key: FRONTEND_URL
         sync: false          # Set to your Vercel URL after frontend is deployed
       - key: APP_URL

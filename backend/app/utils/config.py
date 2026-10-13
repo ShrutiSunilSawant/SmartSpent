@@ -43,7 +43,10 @@ class Settings(BaseSettings):
     # Database
     database_url: str = "postgresql://localhost/smartspent"
 
-    # Groq — cloud LLM (free tier, replaces Ollama in production)
+    # Gemini — Google AI Studio free tier (primary LLM)
+    gemini_api_key: str = ""
+
+    # Groq — kept for legacy compatibility, no longer used
     groq_api_key: str = ""
 
     # Ollama — local LLM server (used when GROQ_API_KEY is not set)
