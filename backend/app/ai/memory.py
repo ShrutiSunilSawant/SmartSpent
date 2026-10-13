@@ -42,21 +42,25 @@ class FinancialMemory:
     """
 
     def __init__(self):
-        """Initialize ChromaDB client and create collections."""
-        try:
-            # Use persistent storage locally; fall back to in-memory on cloud
-            # (Render free tier has an ephemeral filesystem, so persistence is a no-op there)
-            if settings.chroma_persist_dir:
-                self.client = chromadb.PersistentClient(
-                    path=settings.chroma_persist_dir,
-                    settings=ChromaSettings(anonymized_telemetry=False),
-                )
-            else:
-                self.client = chromadb.EphemeralClient(
-                    settings=ChromaSettings(anonymized_telemetry=False),
-                )
+        """Initialize ChromaDB client and create collections.
 
-            # Create collections (or load if they exist)
+        On cloud (no CHROMA_PERSIST_DIR), skip ChromaDB entirely to avoid
+        downloading the 79MB embedding model on every cold start.
+        """
+        self.client = None
+        self.conversations = None
+        self.insights = None
+        self.preferences = None
+
+        if not settings.chroma_persist_dir:
+            logger.info("ChromaDB disabled (no persist dir) — memory is stateless on cloud")
+            return
+
+        try:
+            self.client = chromadb.PersistentClient(
+                path=settings.chroma_persist_dir,
+                settings=ChromaSettings(anonymized_telemetry=False),
+            )
             self.conversations = self.client.get_or_create_collection(
                 name="conversations",
                 metadata={"description": "Chat conversation history"},
@@ -69,16 +73,10 @@ class FinancialMemory:
                 name="user_preferences",
                 metadata={"description": "User preferences and goals"},
             )
-
             logger.info("ChromaDB memory initialized at: {}", settings.chroma_persist_dir)
 
         except Exception as e:
             logger.error("Failed to initialize ChromaDB: {}", str(e))
-            # Don't crash — app works without memory, just stateless
-            self.client = None
-            self.conversations = None
-            self.insights = None
-            self.preferences = None
 
     def save_conversation(
         self,
