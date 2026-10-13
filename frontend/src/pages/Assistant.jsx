@@ -52,44 +52,6 @@ function Message({ message, isLast }) {
           </div>
         </div>
 
-        {/* AI thinking steps (collapsible) */}
-        {!isUser && message.thinkingSteps && message.thinkingSteps.length > 0 && (
-          <div className="w-full">
-            <button
-              onClick={() => setShowSteps(!showSteps)}
-              className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-400 transition-colors"
-            >
-              <Zap size={11} />
-              <span>{message.thinkingSteps.length} reasoning steps</span>
-              <ChevronDown size={11} className={`transition-transform ${showSteps ? 'rotate-180' : ''}`} />
-            </button>
-            <AnimatePresence>
-              {showSteps && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="mt-2 pl-3 border-l-2 border-surface-700 space-y-1"
-                >
-                  {message.thinkingSteps.map((step, i) => (
-                    <p key={i} className="text-xs text-slate-600 font-mono">{step}</p>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
-
-        {/* Tools used */}
-        {!isUser && message.sources && message.sources.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
-            {message.sources.map((tool) => (
-              <span key={tool} className="badge-blue text-xs">
-                🔧 {tool}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
       {isUser && (
