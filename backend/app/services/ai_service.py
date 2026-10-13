@@ -56,7 +56,7 @@ class AIService:
         from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
         llm = ChatGoogleGenerativeAI(
-            model="gemini-2.0-flash",
+            model="gemini-3.0-flash",
             google_api_key=settings.gemini_api_key,
             temperature=0.7,
         )
